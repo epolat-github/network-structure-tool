@@ -1,2 +1,2 @@
 main: main.c
-	gcc main.c -o main -g -std=c99
+	gcc main.c tree.c -lm -o main -g -std=c99
