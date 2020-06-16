@@ -47,7 +47,14 @@ struct node addNode(char *type, char *parentType, int parentId)
     if (counter == 0)
     {
         newNode = createNode(currentID, type, NULL);
+
         root = (struct node *)malloc(sizeof(struct node));
+        if (root == NULL)
+        {
+            printf("Memory problem while adding new node.\n");
+            exit(1);
+        }
+
         memcpy(root, &newNode, sizeof(struct node));
     }
 
@@ -239,6 +246,12 @@ int placeNode(struct node node)
         if (parent->childrenList[i] == NULL)
         {
             parent->childrenList[i] = (struct node *)malloc(sizeof(struct node));
+            if (parent->childrenList[i] == NULL)
+            {
+                printf("Memory problem while placing new node.\n");
+                exit(1);
+            }
+
             memcpy(parent->childrenList[i], &node, sizeof(struct node));
             (parent->childCount)++;
 
