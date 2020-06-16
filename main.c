@@ -8,30 +8,40 @@
 int main(int argc, char const *argv[])
 {
     char line[MAXCHAR];
-    int firstLine = 1;
+    int firstLine = 1; // first line indicator for inserting root node
+
+    // file pointers
     FILE *inputFilePtr;
     FILE *outputFilePtr;
-    struct node *root;
+    FILE *bonusInputFilePtr;
+    FILE *bonusOutFilePtr;
+    // struct node *root;
 
     // check parameters
-    //TODO should be 5
-    if (argc != 3)
+    if (argc != 5)
     {
         printf("Wrong number of parameters\n");
         return 1;
     }
 
-    inputFilePtr = fopen(argv[1], "r");
+    /* ---------------*/
+    /* NORMAL HW PART */
+    /* ---------------*/
 
-    if (inputFilePtr == NULL)
+    // open input and output files
+    inputFilePtr = fopen(argv[1], "r");
+    outputFilePtr = fopen(argv[2], "w");
+
+    if (inputFilePtr == NULL || outputFilePtr == NULL)
     {
-        printf("Error opening input file!\n");
+        printf("Error opening input or output file!\n");
         return 1;
     }
 
+    // read normal input file
     while (fgets(line, MAXCHAR, inputFilePtr) != NULL)
     {
-        char *command = strtok(line, " []");
+        char *command = strtok(line, " []\t");
 
         // INSERT command
         if (strcmp(command, "INSERT") == 0)
@@ -44,11 +54,9 @@ int main(int argc, char const *argv[])
 
                 // insert root node
                 addNode(nodeType, NULL, 0);
-                // printf("girdi\n");
-                // printf("root=> %s %d\n", root->type, root->id);
             }
 
-            // insert normal node
+            // insert normal nodes
             else
             {
                 char *nodeType = strtok(NULL, " []");
@@ -78,15 +86,75 @@ int main(int argc, char const *argv[])
             char *nodeId = strtok(NULL, " []");
 
             // find and print node
-            printNetwork(nodeType, atoi(nodeId));
-        }
-
-        // INVALID input
-        else
-        {
-            printf("Invalid command: %s\n", command);
+            printNetwork(nodeType, atoi(nodeId), outputFilePtr);
         }
     }
+
+    // close normal input and output files
+    fclose(inputFilePtr);
+    fclose(outputFilePtr);
+
+    /* ---------------*/
+    /* BONUS HW PART */
+    /* ---------------*/
+
+    // open and check bonus part input and output files
+    bonusInputFilePtr = fopen(argv[3], "r");
+    bonusOutFilePtr = fopen(argv[4], "w");
+    if (bonusInputFilePtr == NULL || bonusOutFilePtr == NULL)
+    {
+        printf("Error opening bonus input or output file!\n");
+        return 1;
+    }
+
+    // read bonus input file
+    while (fgets(line, MAXCHAR, bonusInputFilePtr) != NULL)
+    {
+        char *command = strtok(line, " []\t");
+
+        // MOVE command
+        if (strcmp(command, "MOVE") == 0)
+        {
+            char *nodeType = strtok(NULL, " []");
+            char *nodeId = strtok(NULL, " []");
+
+            char *destinationType = strtok(NULL, " []");
+            char *destinationId = strtok(NULL, " []");
+
+            // move the given subtree to the given destination as child node
+            moveTree(nodeType, atoi(nodeId), destinationType, atoi(destinationId));
+        }
+
+        // COUNT command
+        else if (strcmp(command, "COUNT") == 0)
+        {
+            char *nodeType = strtok(NULL, " []");
+            char *parentType = strtok(NULL, " []");
+            char *parentId = strtok(NULL, " []");
+
+            // count the given nodes occurences
+            int count = countNodes(nodeType, parentType, atoi(parentId));
+
+            fprintf(bonusOutFilePtr, "%d\n", count);
+        }
+
+        // PRINT_LEVEL command
+        else if (strcmp(command, "PRINT_LEVEL") == 0)
+        {
+            char *nodeType = strtok(NULL, " []");
+            char *nodeId = strtok(NULL, " []");
+
+            // print the given node in level order format
+            printLevelOrder(nodeType, atoi(nodeId), bonusOutFilePtr);
+        }
+    }
+
+    // close the bonus input and output files
+    fclose(bonusInputFilePtr);
+    fclose(bonusOutFilePtr);
+
+    // clean and free memory of leftovers of the tree, if it still exists.
+    freeMemory();
 
     return 0;
 }

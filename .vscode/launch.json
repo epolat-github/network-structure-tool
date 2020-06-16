@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/main",
-            "args": ["input.txt", "out"],
+            "args": ["data/Inp3.txt", "Out3.txt", "data/BonusInp3.txt", "BonusOut3.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
